@@ -1,5 +1,18 @@
 [Desktop Entry]
 Name=Scratch
+Name[ar]=شطب
+Name[bn]=স্ক্র্যাচ
+Name[de]=Scratch
+Name[es]=Scratch
+Name[fr]=Gratter
+Name[hi]=स्क्रैच 
+Name[id]=Scratch
+Name[pt_BR]=Scratch
+Name[ro]=Scratch
+Name[th]=โปรแกรมสแครทช
+Name[vi]=Scratch
+Name[zh_CN]=Scratch
+Name[zh_TW]=Scratch
 Comment=Imagine, Program, Share
 Exec=scratch-desktop
 Terminal=false

@@ -1,9 +1,9 @@
 app-id: edu.mit.Scratch
 runtime: org.freedesktop.Platform
-runtime-version: '18.08'
+runtime-version: '19.08'
 sdk: org.freedesktop.Sdk
 base: org.electronjs.Electron2.BaseApp
-base-version: '18.08'
+base-version: '19.08'
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.node10
 separate-locales: false
@@ -58,13 +58,14 @@ modules:
     sources:
       - type: git
         url: https://github.com/LLK/scratch-desktop.git
-        tag: v1.2.1
+        tag: v3.6.0
       - type: file
         path: scratch-desktop/node_modules/scratch-gui/package-lock.json
         dest-filename: scratch-gui-package-lock.json
       - generated-sources.0.json
       - generated-sources.1.json
       - generated-sources.2.json
+      - generated-sources.3.json
       - asset-sources.json
       - type: script
         dest-filename: scratch-desktop.sh

@@ -7,13 +7,10 @@ import os
 import shutil
 import urllib.request
 
-def download_package_files(repo, at, target_dir, *, lock=True):
+def download_package_files(repo, at, target_dir):
     target_dir.mkdir(parents=True, exist_ok=True)
 
     for filename in 'package-lock.json', 'package.json':
-        if not lock and 'lock' in filename:
-            continue
-
         print(f'Downloading {repo}/{filename}...')
         url = f'https://github.com/LLK/{repo}/raw/{at}/{filename}'
 
@@ -53,7 +50,7 @@ with open(desktop_dir / 'package-lock.json') as fp:
 
 gui_commit = package_lock['dependencies']['scratch-gui']['version'].split('#')[1]
 gui_dir = desktop_dir / 'node_modules' / 'scratch-gui'
-download_package_files('scratch-gui', gui_commit, gui_dir, lock=False)
+download_package_files('scratch-gui', gui_commit, gui_dir)
 
 print('Reading assets...')
 

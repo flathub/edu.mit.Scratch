@@ -48,7 +48,7 @@ modules:
         sed -i 's^electronVersion = .*^electronVersion = "v"+require("./node_modules/electron/package.json").version;^' webpack.makeConfig.js
 
       # Build scratch-desktop.
-      - '. flatpak-node/electron-builder-arch-args.sh; npm run dist:dir $ELECTRON_BUILDER_ARCH_ARGS'
+      - '. flatpak-node/electron-builder-arch-args.sh; echo "ELECTRON_BUILDER_ARCH_ARGS: $ELECTRON_BUILDER_ARCH_ARGS"; npm run dist:dir $ELECTRON_BUILDER_ARCH_ARGS'
       - 'cp -r dist/linux-unpacked /app/scratch'
 
       # Scale down the SVG from 1024x1024.

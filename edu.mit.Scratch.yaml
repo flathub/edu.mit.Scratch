@@ -48,13 +48,13 @@ modules:
         sed -i 's^electronVersion = .*^electronVersion = "v"+require("./node_modules/electron/package.json").version;^' webpack.makeConfig.js
 
       # Build scratch-desktop.
-      - 'npm run dist:dir'
+      - '. flatpak-node/electron-builder-arch-args.sh; npm run dist:dir $ELECTRON_BUILDER_ARCH_ARGS'
       - 'cp -r dist/linux-unpacked /app/scratch'
 
       # Scale down the SVG from 1024x1024.
       - 'mkdir -p /app/share/icons/hicolor/scalable/apps'
-      - 'rsvg-convert -f svg -w 512 -h 512 -o /app/share/icons/hicolor/scalable/apps/edu.mit.Scratch.svg src/icon/ScratchDesktop.svg
-      '
+      - 'rsvg-convert -f svg -w 512 -h 512 -o /app/share/icons/hicolor/scalable/apps/edu.mit.Scratch.svg src/icon/ScratchDesktop.svg'
+
       - 'install -Dm 755 scratch-desktop.sh /app/bin/scratch-desktop'
     sources:
       - type: git

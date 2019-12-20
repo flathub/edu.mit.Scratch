@@ -50,6 +50,7 @@ modules:
       # Build scratch-desktop.
       - '. flatpak-node/electron-builder-arch-args.sh; echo "ELECTRON_BUILDER_ARCH_ARGS: $ELECTRON_BUILDER_ARCH_ARGS"; npm run dist:dir -- $ELECTRON_BUILDER_ARCH_ARGS'
       - 'cp -r dist/linux*unpacked /app/scratch'
+      - 'install -Dm 755 flatpak-node/libffmpeg.so -t /app/scratch'
 
       # Scale down the SVG from 1024x1024.
       - 'mkdir -p /app/share/icons/hicolor/scalable/apps'

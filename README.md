@@ -6,6 +6,6 @@
   the latest asset sources & download the needed package\*.json files.
 - Run:
 
-    flatpak-node-generator.py npm scratch-desktop/package-lock.json -P -R scratch-\*/package-lock.json
+    flatpak-node-generator.py npm scratch-desktop/package-lock.json -sPR scratch-\*/package-lock.json --electron-chromedriver 7.15
 
   afterwards to regenerate the npm package sources.

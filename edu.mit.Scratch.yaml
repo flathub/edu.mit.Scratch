@@ -22,6 +22,7 @@ modules:
     build-options:
       append-path: /usr/lib/sdk/node10/bin
       env:
+        CHROMEDRIVER_SKIP_DOWNLOAD: 'true'
         ELECTRON_CACHE: '/run/build/scratch-desktop/flatpak-node/electron-cache'
         npm_config_nodedir: '/usr/lib/sdk/node10'
     build-commands:
@@ -31,11 +32,11 @@ modules:
       - 'flatpak-node/patch.sh'
       - 'npm install --offline --cache=$FLATPAK_BUILDER_BUILDDIR/flatpak-node/npm-cache'
 
-      # Install scratch-gui's dependencies (most of this hackage is needed because scratch-gui
-      # itself has no package-lock.json), and build it.
+      # Install scratch-gui's dependencies (most of this hackage is needed because scratch-gui's
+      # package-lock.json needs to be patched to make the Git sources work), and build it.
       - 'cp scratch-gui-package-lock.json node_modules/scratch-gui/package-lock.json'
       - 'flatpak-node/patch/node_modules/scratch-gui.sh'
-      - 'cd node_modules/scratch-gui; TMPDIR=$FLATPAK_BUILDER_BUILDDIR/flatpak-node/tmp npm install --offline --cache=$FLATPAK_BUILDER_BUILDDIR/flatpak-node/npm-cache'
+      - 'cd node_modules/scratch-gui; npm install --offline --cache=$FLATPAK_BUILDER_BUILDDIR/flatpak-node/npm-cache'
       - 'cd node_modules/scratch-gui && BUILD_MODE=dist npm run build'
 
       # Some patching before build:
@@ -47,13 +48,13 @@ modules:
         sed -i 's^electronVersion = .*^electronVersion = "v"+require("./node_modules/electron/package.json").version;^' webpack.makeConfig.js
 
       # Build scratch-desktop.
-      - 'npm run dist:dir'
-      - 'cp -r dist/linux-unpacked /app/scratch'
+      - '. flatpak-node/electron-builder-arch-args.sh; echo "ELECTRON_BUILDER_ARCH_ARGS: $ELECTRON_BUILDER_ARCH_ARGS"; npm run dist:dir -- $ELECTRON_BUILDER_ARCH_ARGS'
+      - 'cp -r dist/linux*unpacked /app/scratch'
 
       # Scale down the SVG from 1024x1024.
       - 'mkdir -p /app/share/icons/hicolor/scalable/apps'
-      - 'rsvg-convert -f svg -w 512 -h 512 -o /app/share/icons/hicolor/scalable/apps/edu.mit.Scratch.svg src/icon/ScratchDesktop.svg
-      '
+      - 'rsvg-convert -f svg -w 512 -h 512 -o /app/share/icons/hicolor/scalable/apps/edu.mit.Scratch.svg src/icon/ScratchDesktop.svg'
+
       - 'install -Dm 755 scratch-desktop.sh /app/bin/scratch-desktop'
     sources:
       - type: git

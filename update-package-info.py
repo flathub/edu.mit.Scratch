@@ -20,7 +20,7 @@ def download_package_files(repo, at, target_dir):
 
 def collect_assets(output, library):
     for item in library:
-        md5 = item.get('md5') or item.get('baseLayerMD5')
+        md5 = item.get('md5') or item.get('baseLayerMD5') or item.get('md5ext')
         assert md5, item
         output.add(md5)
 
@@ -62,12 +62,13 @@ for name in LIBRARY_NAMES:
     with urllib.request.urlopen(url) as fp:
         library = json.load(fp)
 
-    collect_assets(assets, library)
     if name == 'sprites':
         for item in library:
             for nested in 'costumes', 'sounds':
-                if nested in item['json']:
-                    collect_assets(assets, item['json'][nested])
+                if nested in item:
+                    collect_assets(assets, item[nested])
+    else:
+        collect_assets(assets, library)
 
 sources = []
 for asset in assets:

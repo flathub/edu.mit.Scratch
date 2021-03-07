@@ -1,11 +1,11 @@
 app-id: edu.mit.Scratch
 runtime: org.freedesktop.Platform
-runtime-version: '19.08'
+runtime-version: '20.08'
 sdk: org.freedesktop.Sdk
 base: org.electronjs.Electron2.BaseApp
-base-version: '19.08'
+base-version: '20.08'
 sdk-extensions:
-  - org.freedesktop.Sdk.Extension.node10
+  - org.freedesktop.Sdk.Extension.node12
 separate-locales: false
 command: scratch-desktop
 finish-args:
@@ -21,15 +21,24 @@ modules:
   - name: scratch-desktop
     buildsystem: simple
     build-options:
-      append-path: /usr/lib/sdk/node10/bin
+      append-path: /usr/lib/sdk/node12/bin
       env:
         CHROMEDRIVER_SKIP_DOWNLOAD: 'true'
-        ELECTRON_CACHE: '/run/build/scratch-desktop/flatpak-node/electron-cache'
-        npm_config_nodedir: '/usr/lib/sdk/node10'
+        #ELECTRON_CACHE: '/run/build/scratch-desktop/flatpak-node/electron-cache'
+        #npm_config_nodedir: '/usr/lib/sdk/node12'
+        XDG_CACHE_HOME: '/run/build/scratch-desktop/flatpak-node/cache'
+        NODE_OPTIONS: '--max-old-space-size=4096'
     build-commands:
+      - sha256sum flatpak-node/npm-cache/_cacache/content-v2/sha256/2a/69/8a54dc2ad3c6bd670f050389afbce00d3696aca3fa3ca25b2116187e4611
       # (> is used to avoid some quoting issues.)
 
-      # Initial setup.
+      # Make sure scratch-gui's sources get pulled along. This is a complication due to the fact
+      # that scratch-gui can't easily be built right now due to the need to patch its package.json
+      # files.
+      - >
+        sed -i '/\/src/d' flatpak-node/git-packages/scratch-gui-*/.npmignore
+
+      # Install the main dependencies.
       - 'flatpak-node/patch.sh'
       - 'npm install --offline --cache=$FLATPAK_BUILDER_BUILDDIR/flatpak-node/npm-cache'
 
@@ -42,14 +51,17 @@ modules:
 
       # Some patching before build:
       # Make the fetch command a no-op.
-      - >
-        sed -i 's/"fetch": ".*"/"fetch": ":"/' package.json
+      #- >
+      #  sed -i 's/"fetch": ".*"/"fetch": ":"/' package.json
       # Avoid running 'electron --version' (which will fail because of lack of $DISPLAY).
-      - >
-        sed -i 's^electronVersion = .*^electronVersion = "v"+require("./node_modules/electron/package.json").version;^' webpack.makeConfig.js
+      #- >
+      #  sed -i 's^electronVersion = .*^electronVersion = "v"+require("./node_modules/electron/package.json").version;^' webpack.makeConfig.js
+      # Set up a basic build target for Linux
+      #- >
+      #  sed -i 's/.*Could not determine targets for platform.*/targets.push({});/'
 
       # Build scratch-desktop.
-      - '. flatpak-node/electron-builder-arch-args.sh; echo "ELECTRON_BUILDER_ARCH_ARGS: $ELECTRON_BUILDER_ARCH_ARGS"; npm run dist:dir -- $ELECTRON_BUILDER_ARCH_ARGS'
+      - '. flatpak-node/electron-builder-arch-args.sh; npm run build:dir -- $ELECTRON_BUILDER_ARCH_ARGS'
       - 'cp -r dist/linux*unpacked /app/scratch'
       - 'install -Dm 755 flatpak-node/libffmpeg.so -t /app/scratch'
 
@@ -61,20 +73,25 @@ modules:
     sources:
       - type: git
         url: https://github.com/LLK/scratch-desktop.git
-        tag: v3.6.0
+        tag: v3.18.1
+      - type: patch
+        paths:
+          # Skip the fetch command, which requires network access
+          - patches/no-fetch.patch
+          # Don't run the Electron binary to get the version, which requires X11
+          - patches/no-run-electron.patch
+          # Add a basic Linux platform definition to the build scripts
+          - patches/add-linux-platform.patch
       - type: file
         path: scratch-desktop/node_modules/scratch-gui/package-lock.json
         dest-filename: scratch-gui-package-lock.json
-      - generated-sources.0.json
-      - generated-sources.1.json
-      - generated-sources.2.json
-      - generated-sources.3.json
+      - generated-sources.json
       - asset-sources.json
       - type: script
         dest-filename: scratch-desktop.sh
         commands:
           - 'cd /app/scratch'
-          - './scratch-desktop'
+          - 'zypak-wrapper ./scratch-desktop'
 
   - name: appdata
     buildsystem: simple

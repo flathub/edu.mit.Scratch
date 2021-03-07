@@ -1,0 +1,21 @@
+diff --git a/webpack.makeConfig.js b/webpack.makeConfig.js
+index 19ed37c..b871228 100644
+--- a/webpack.makeConfig.js
++++ b/webpack.makeConfig.js
+@@ -3,7 +3,6 @@ const fs = require('fs');
+ const path = require('path');
+ const util = require('util');
+ 
+-const electronPath = require('electron');
+ const webpack = require('webpack');
+ const merge = require('webpack-merge');
+ 
+@@ -14,7 +13,7 @@ const postcssImport = require('postcss-import');
+ 
+ const isProduction = (process.env.NODE_ENV === 'production');
+ 
+-const electronVersion = childProcess.execSync(`${electronPath} --version`, {encoding: 'utf8'}).trim();
++const electronVersion = 'v' + require('./node_modules/electron/package.json').version;
+ console.log(`Targeting Electron ${electronVersion}`); // eslint-disable-line no-console
+ 
+ const makeConfig = function (defaultConfig, options) {

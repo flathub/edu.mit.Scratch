@@ -73,7 +73,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/LLK/scratch-desktop.git
-        tag: v3.18.1
+        tag: v3.26.0
       - type: patch
         paths:
           # Skip the fetch command, which requires network access

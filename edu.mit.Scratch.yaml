@@ -21,7 +21,7 @@ modules:
   - name: scratch-desktop
     buildsystem: simple
     build-options:
-      append-path: /usr/lib/sdk/node16/bin
+      append-path: /usr/lib/sdk/node16/bin:/run/build/scratch-desktop/flatpak-node/chromedriver
       env:
         #ELECTRON_CACHE: '/run/build/scratch-desktop/flatpak-node/electron-cache'
         #npm_config_nodedir: '/usr/lib/sdk/node16'

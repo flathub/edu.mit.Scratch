@@ -23,8 +23,6 @@ modules:
     build-options:
       append-path: /usr/lib/sdk/node16/bin:/run/build/scratch-desktop/flatpak-node/chromedriver
       env:
-        #ELECTRON_CACHE: '/run/build/scratch-desktop/flatpak-node/electron-cache'
-        #npm_config_nodedir: '/usr/lib/sdk/node16'
         XDG_CACHE_HOME: '/run/build/scratch-desktop/flatpak-node/cache'
         npm_config_cache: /run/build/scratch-desktop/flatpak-node/npm-cache
         npm_config_nodedir: /usr/lib/sdk/node16
@@ -39,7 +37,6 @@ modules:
         # Instead, we fetch scratch-microbit.hex and generate microbit-hex-url.cjs in sources.
         npm_config_ignore_scripts: 'true'
     build-commands:
-      # - sha256sum flatpak-node/npm-cache/_cacache/content-v2/sha256/2a/69/8a54dc2ad3c6bd670f050389afbce00d3696aca3fa3ca25b2116187e4611
       # (> is used to avoid some quoting issues.)
 
       # Make sure scratch-gui's sources get pulled along. This is a complication due to the fact
@@ -59,17 +56,6 @@ modules:
       - 'flatpak-node/patch/node_modules/scratch-gui.sh'
       - 'cd node_modules/scratch-gui; npm install --offline'
       - 'cd node_modules/scratch-gui && BUILD_MODE=dist npm run build'
-
-      # Some patching before build:
-      # Make the fetch command a no-op.
-      #- >
-      #  sed -i 's/"fetch": ".*"/"fetch": ":"/' package.json
-      # Avoid running 'electron --version' (which will fail because of lack of $DISPLAY).
-      #- >
-      #  sed -i 's^electronVersion = .*^electronVersion = "v"+require("./node_modules/electron/package.json").version;^' webpack.makeConfig.js
-      # Set up a basic build target for Linux
-      #- >
-      #  sed -i 's/.*Could not determine targets for platform.*/targets.push({});/'
 
       # Build scratch-desktop.
       - '. flatpak-node/electron-builder-arch-args.sh; npm run build:dir -- $ELECTRON_BUILDER_ARCH_ARGS'

@@ -72,8 +72,8 @@ modules:
       - 'install -Dm 755 scratch-desktop.sh /app/bin/scratch-desktop'
     sources:
       - type: git
-        url: https://github.com/LLK/scratch-desktop.git
         tag: v3.18.1
+        url: https://github.com/scratchfoundation/scratch-desktop.git
       - type: patch
         paths:
           # Skip the fetch command, which requires network access

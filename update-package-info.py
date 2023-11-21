@@ -12,7 +12,7 @@ def download_package_files(repo, at, target_dir):
 
     for filename in 'package-lock.json', 'package.json':
         print(f'Downloading {repo}/{filename}...')
-        url = f'https://github.com/LLK/{repo}/raw/{at}/{filename}'
+        url = f'https://github.com/scratchfoundation/{repo}/raw/{at}/{filename}'
 
         with urllib.request.urlopen(url) as src:
             with open(target_dir / filename, 'wb') as dst:
@@ -34,7 +34,7 @@ LIBRARY_NAMES = [
 # XXX: Don't necessarily want to depend on a yaml parser
 with open('edu.mit.Scratch.yaml') as fp:
     for line in fp:
-        if 'https://github.com/LLK/scratch-desktop.git' in line:
+        if 'https://github.com/scratchfoundation/scratch-desktop.git' in line:
             for line2 in fp:
                 if 'tag' in line2:
                     desktop_tag = line2.split(':')[1].strip()
@@ -58,7 +58,7 @@ assets = set()
 
 for name in LIBRARY_NAMES:
     print(f'Library {name}')
-    url = f'https://github.com/LLK/scratch-gui/raw/{gui_commit}/src/lib/libraries/{name}.json'
+    url = f'https://github.com/scratchfoundation/scratch-gui/raw/{gui_commit}/src/lib/libraries/{name}.json'
     with urllib.request.urlopen(url) as fp:
         library = json.load(fp)
 

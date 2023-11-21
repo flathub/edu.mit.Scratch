@@ -1,11 +1,11 @@
 app-id: edu.mit.Scratch
 runtime: org.freedesktop.Platform
-runtime-version: '21.08'
+runtime-version: '22.08'
 sdk: org.freedesktop.Sdk
 base: org.electronjs.Electron2.BaseApp
-base-version: '21.08'
+base-version: '22.08'
 sdk-extensions:
-  - org.freedesktop.Sdk.Extension.node12
+  - org.freedesktop.Sdk.Extension.node16
 separate-locales: false
 command: scratch-desktop
 finish-args:
@@ -21,15 +21,25 @@ modules:
   - name: scratch-desktop
     buildsystem: simple
     build-options:
-      append-path: /usr/lib/sdk/node12/bin
+      append-path: /usr/lib/sdk/node16/bin
       env:
-        CHROMEDRIVER_SKIP_DOWNLOAD: 'true'
         #ELECTRON_CACHE: '/run/build/scratch-desktop/flatpak-node/electron-cache'
-        #npm_config_nodedir: '/usr/lib/sdk/node12'
+        #npm_config_nodedir: '/usr/lib/sdk/node16'
         XDG_CACHE_HOME: '/run/build/scratch-desktop/flatpak-node/cache'
-        NODE_OPTIONS: '--max-old-space-size=4096'
+        npm_config_cache: /run/build/scratch-desktop/flatpak-node/npm-cache
+        npm_config_nodedir: /usr/lib/sdk/node16
+        npm_config_offline: 'true'
+        CHROMEDRIVER_SKIP_DOWNLOAD: 'true'
+        # FIXME: We use openssl-legacy-provider as a workaround to appease NodeJS 16 with our
+        # current set of dependencies. We should remove this as soon as possible.
+        NODE_OPTIONS: '--max-old-space-size=4096 --openssl-legacy-provider'
+        # We use the ignore-scripts option to skip the prepublish script for scratch-gui. This
+        # means the following doesn't run:
+        # <https://github.com/scratchfoundation/scratch-gui/blob/develop/scripts/prepublish.mjs#L113-L126>
+        # Instead, we fetch scratch-microbit.hex and generate microbit-hex-url.cjs in sources.
+        npm_config_ignore_scripts: 'true'
     build-commands:
-      - sha256sum flatpak-node/npm-cache/_cacache/content-v2/sha256/2a/69/8a54dc2ad3c6bd670f050389afbce00d3696aca3fa3ca25b2116187e4611
+      # - sha256sum flatpak-node/npm-cache/_cacache/content-v2/sha256/2a/69/8a54dc2ad3c6bd670f050389afbce00d3696aca3fa3ca25b2116187e4611
       # (> is used to avoid some quoting issues.)
 
       # Make sure scratch-gui's sources get pulled along. This is a complication due to the fact
@@ -40,13 +50,14 @@ modules:
 
       # Install the main dependencies.
       - 'flatpak-node/patch.sh'
-      - 'npm install --offline --cache=$FLATPAK_BUILDER_BUILDDIR/flatpak-node/npm-cache'
+      - 'npm install --offline'
 
       # Install scratch-gui's dependencies (most of this hackage is needed because scratch-gui's
       # package-lock.json needs to be patched to make the Git sources work), and build it.
       - 'cp scratch-gui-package-lock.json node_modules/scratch-gui/package-lock.json'
+      - 'cp -R scratch-gui-src-generated node_modules/scratch-gui/src/generated'
       - 'flatpak-node/patch/node_modules/scratch-gui.sh'
-      - 'cd node_modules/scratch-gui; npm install --offline --cache=$FLATPAK_BUILDER_BUILDDIR/flatpak-node/npm-cache'
+      - 'cd node_modules/scratch-gui; npm install --offline'
       - 'cd node_modules/scratch-gui && BUILD_MODE=dist npm run build'
 
       # Some patching before build:
@@ -72,8 +83,8 @@ modules:
       - 'install -Dm 755 scratch-desktop.sh /app/bin/scratch-desktop'
     sources:
       - type: git
-        tag: v3.18.1
         url: https://github.com/scratchfoundation/scratch-desktop.git
+        tag: v3.30.5
       - type: patch
         paths:
           # Skip the fetch command, which requires network access
@@ -85,6 +96,15 @@ modules:
       - type: file
         path: scratch-desktop/node_modules/scratch-gui/package-lock.json
         dest-filename: scratch-gui-package-lock.json
+      - type: archive
+        url: https://downloads.scratch.mit.edu/microbit/scratch-microbit-1.2.0.hex.zip
+        dest: scratch-gui-src-generated
+        sha256: dfd574b709307fe76c44dbb6b0ac8942e7908f4d5c18359fae25fbda3c9f4399
+      - type: inline
+        dest: scratch-gui-src-generated
+        dest-filename: microbit-hex-url.cjs
+        contents: >
+          module.exports = require('./scratch-microbit-1.2.0.hex');
       - generated-sources.json
       - asset-sources.json
       - type: script

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x.scratch.sb3">
+    <sub-class-of type="application/zip" />
+    <glob pattern="*.sb3" />
+    <comment>Scratch 3 Project</comment>
+    <acronym>SB3</acronym>
+    <generic-icon name="edu.mit.Scratch" />
+  </mime-type>
+</mime-info>

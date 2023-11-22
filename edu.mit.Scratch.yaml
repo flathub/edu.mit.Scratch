@@ -95,16 +95,19 @@ modules:
       - type: script
         dest-filename: scratch-desktop.sh
         commands:
-          - 'cd /app/scratch'
-          - 'zypak-wrapper ./scratch-desktop'
+          - cd /app/scratch
+          - zypak-wrapper ./scratch-desktop "$@"
 
   - name: appdata
     buildsystem: simple
     build-commands:
-      - 'install -Dm 644 edu.mit.Scratch.appdata.xml /app/share/metainfo/edu.mit.Scratch.appdata.xml'
-      - 'install -Dm 644 edu.mit.Scratch.desktop /app/share/applications/edu.mit.Scratch.desktop'
+      - install -Dm 644 edu.mit.Scratch.appdata.xml /app/share/metainfo/edu.mit.Scratch.appdata.xml
+      - install -Dm 644 edu.mit.Scratch.desktop /app/share/applications/edu.mit.Scratch.desktop
+      - install -Dm 644 edu.mit.Scratch.mime.xml /app/share/mime/packages/edu.mit.Scratch.mime.xml
     sources:
       - type: file
         path: edu.mit.Scratch.appdata.xml
       - type: file
         path: edu.mit.Scratch.desktop
+      - type: file
+        path: edu.mit.Scratch.mime.xml

@@ -15,7 +15,6 @@ finish-args:
   - '--socket=pulseaudio'
   - '--device=dri'
   - '--device=all'
-  - '--filesystem=home'
   - '--talk-name=org.freedesktop.Notifications'
 modules:
   - name: scratch-desktop

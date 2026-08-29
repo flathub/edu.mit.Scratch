@@ -1,11 +1,11 @@
 app-id: edu.mit.Scratch
 runtime: org.freedesktop.Platform
-runtime-version: '22.08'
+runtime-version: '23.08'
 sdk: org.freedesktop.Sdk
 base: org.electronjs.Electron2.BaseApp
-base-version: '22.08'
+base-version: '23.08'
 sdk-extensions:
-  - org.freedesktop.Sdk.Extension.node16
+  - org.freedesktop.Sdk.Extension.node18
 separate-locales: false
 command: scratch-desktop
 finish-args:
@@ -20,14 +20,14 @@ modules:
   - name: scratch-desktop
     buildsystem: simple
     build-options:
-      append-path: /usr/lib/sdk/node16/bin:/run/build/scratch-desktop/flatpak-node/chromedriver
+      append-path: /usr/lib/sdk/node18/bin:/run/build/scratch-desktop/flatpak-node/chromedriver
       env:
         XDG_CACHE_HOME: '/run/build/scratch-desktop/flatpak-node/cache'
         npm_config_cache: /run/build/scratch-desktop/flatpak-node/npm-cache
-        npm_config_nodedir: /usr/lib/sdk/node16
+        npm_config_nodedir: /usr/lib/sdk/node18
         npm_config_offline: 'true'
         CHROMEDRIVER_SKIP_DOWNLOAD: 'true'
-        # FIXME: We use openssl-legacy-provider as a workaround to appease NodeJS 16 with our
+        # FIXME: We use openssl-legacy-provider as a workaround to appease NodeJS 18 with our
         # current set of dependencies. We should remove this as soon as possible.
         NODE_OPTIONS: '--max-old-space-size=4096 --openssl-legacy-provider'
         # We use the ignore-scripts option to skip the prepublish script for scratch-gui. This
